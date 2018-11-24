@@ -1,5 +1,6 @@
 package space.majid.testing.materieldestesting
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+        // Login button
         login_button.setOnClickListener {
             val email = login_email.text.toString()
             val password = login_pass.text.toString()
@@ -29,5 +32,13 @@ class MainActivity : AppCompatActivity() {
                     }
         }
 
+        // Register Link
+
+        register_link.setOnClickListener {
+            Log.d("REGISTER_LINK", "clickListen:success")
+            val mess = "testing message"
+            startActivityForResult<RegisterActivity>(42)
+        }
+
     }
-}
+
