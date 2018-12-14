@@ -12,6 +12,7 @@ import org.jetbrains.anko.startActivityForResult
 class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
+        startActivity<SearchUsersActivity>()
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
         setContentView(R.layout.activity_main)

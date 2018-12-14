@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_register.*
+import org.jetbrains.anko.startActivity
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -31,26 +32,30 @@ class RegisterActivity : AppCompatActivity() {
             val username = register_username.text.toString()
             val email = register_email.text.toString()
             val password = register_pass.text.toString()
-            val user = User(username, email, password)
             // TODO make sure to validate these values
-            createNewUser(user)
+            createNewUser(username, email, password)
         }
     }
 
-    private fun createNewUser(user: User) {
-        auth.createUserWithEmailAndPassword(user.email, user.password)
+    private fun createNewUser(username: String, email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("FIRE_BASE", "createUserWithEmailAndPassword:success")
                         // Saving the user to the database
                         val newUser = auth.currentUser
+                        val user = User(username, email)
                         Log.d("FIRE_BASE", "User ID = ${newUser?.uid}")
+
                         usersRef.child(newUser!!.uid).setValue(user)
                                 .addOnSuccessListener {
+                                    // TODO take user to it's profile
+                                    startActivity<ProfileActivity>()
                                     Log.d("FIRE_BASE", "usersaved:success")
                                 }
                                 .addOnFailureListener {
+                                    // TODO show error message on the activity
                                     Log.d("FIRE_BASE", "usersaved:failure")
                                     Log.d("FIRE_BASE", it.message)
                                 }
@@ -63,5 +68,5 @@ class RegisterActivity : AppCompatActivity() {
     }
 }
 
-class User(var username: String, var email: String, var password: String) {
+class User(var username: String, var email: String) {
 }
