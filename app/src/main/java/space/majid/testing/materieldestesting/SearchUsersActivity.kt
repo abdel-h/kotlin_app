@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.EditText
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_search_users.*
 
@@ -18,51 +19,57 @@ class SearchUsersActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private lateinit var usersRef: DatabaseReference
 
+    private lateinit var auth: FirebaseAuth
+
     var usersList: ArrayList<UserData> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_users)
 
         database = FirebaseDatabase.getInstance()
-        usersRef = database.getReference()
+        usersRef = database.getReference("users")
 
         linearLayoutManager = LinearLayoutManager(this)
         search_users_list_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false);
 
-        var usersSearchResults: List<UserData>
-        searchListAdapter = UsersListAdapter(ArrayList())
+        searchListAdapter = UsersListAdapter(ArrayList()) { user ->
+            // Handle on add friend
+            // Send to notification to friend_if by adding the current
+            // user ID to users/friend_id/friend_requests
+            addFriend(user.userId)
+        }
         search_users_list_rv.adapter = searchListAdapter
         SearchUsers.onChange { searchString ->
-            usersSearchResults = usersList.filter {
-                it.username.contains(searchString)
-            }
-            searchListAdapter.filterUsers(usersSearchResults as ArrayList<UserData>)
-            getUsers(searchString)
+            getUsers(searchString, searchListAdapter)
         }
     }
 
-    private fun getUsers(username: String) {
-        // Grab Users From FireBase
-        usersList.clear()
-        usersRef.child("users").orderByChild("username").startAt(username).addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onCancelled(p0: DatabaseError) {
-            }
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var childs = snapshot.children
-                childs.forEach {snap ->
-                    val userId: String = snap.key.toString()
-
-                    snap.children.forEach {
-                        if(it.key == "username") {
-                            var username = it.getValue(true).toString()
-                            usersList.add(UserData(username, userId))
+    private fun getUsers(username: String, searchListAdapter: UsersListAdapter) {
+        if(username.isEmpty()) {
+            searchListAdapter.filterUsers(ArrayList())
+        } else {
+            usersRef.orderByChild("username")
+                    .startAt(username)
+                    .endAt(username + "\uf8ff").addListenerForSingleValueEvent(object: ValueEventListener{
+                        override fun onCancelled(p0: DatabaseError) {
                         }
-                    }
-                }
-            }
-        })
-
-
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            var usersList: ArrayList<UserData> = ArrayList()
+                            var childs = snapshot.children
+                            childs.forEach {snap ->
+                                val userId: String = snap.key.toString()
+                                Log.d("onDataChange_USERID", userId)
+                                snap.children.forEach {
+                                    if(it.key == "username") {
+                                        var username = it.getValue(true).toString()
+                                        usersList.add(UserData(username, userId))
+                                    }
+                                }
+                            }
+                            searchListAdapter.filterUsers(usersList)
+                        }
+                    })
+        }
     }
 
     private fun EditText.onChange(cb: (String) -> Unit) {
@@ -71,5 +78,18 @@ class SearchUsersActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+    }
+
+
+    private fun addFriend(user: String) {
+        auth = FirebaseAuth.getInstance()
+        val currentUserId = auth.currentUser?.uid!!
+        usersRef.child(user).child("friend_requests").setValue(currentUserId)
+                .addOnSuccessListener {
+                    Log.d("FIRE_BASE", "friendRequest:success")
+                }
+                .addOnFailureListener {
+                    Log.d("FIRE_BASE", "friendRequest:failure")
+                }
     }
 }

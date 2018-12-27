@@ -26,6 +26,6 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="0dp"
-        tools:src="@drawable/ic_close_black_24dp" />
+        tools:src="@drawable/ic_add_black_24dp" />
 
 </RelativeLayout>

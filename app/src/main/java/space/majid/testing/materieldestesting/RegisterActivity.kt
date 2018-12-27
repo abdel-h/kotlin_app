@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_register.*
 import org.jetbrains.anko.startActivity
 
@@ -41,13 +42,12 @@ class RegisterActivity : AppCompatActivity() {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
                         Log.d("FIRE_BASE", "createUserWithEmailAndPassword:success")
                         // Saving the user to the database
                         val newUser = auth.currentUser
-                        val user = User(username, email)
-                        Log.d("FIRE_BASE", "User ID = ${newUser?.uid}")
-
+                        val deviceTokenId = FirebaseInstanceId.getInstance().id
+                        Log.d("FIRE_BASE:token", deviceTokenId)
+                        val user: Map<String, Any> = hashMapOf("username" to username, "email" to email, "token_id" to deviceTokenId)
                         usersRef.child(newUser!!.uid).setValue(user)
                                 .addOnSuccessListener {
                                     // TODO take user to it's profile

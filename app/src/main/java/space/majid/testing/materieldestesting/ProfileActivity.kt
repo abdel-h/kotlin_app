@@ -8,27 +8,28 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.activity_profile.*
+import org.jetbrains.anko.startActivity
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var usersRef: DatabaseReference
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-
+        startActivity<SearchUsersActivity>()
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         usersRef = database.getReference("users")
-        Log.d("FIRE_BASE", "userid ${auth.currentUser?.uid}")
+        val currentUserId = auth.currentUser?.uid!!
 
-        viewManager = GridLayoutManager(this, 2)
-
+        profileLogout.setOnClickListener {
+            usersRef.child(currentUserId).child("token_id").removeValue()
+            // TODO signout from firebase auth
+            startActivity<MainActivity>()
+        }
 
     }
 }
