@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">MaterielDesTesting</string>
+    <string name="app_name">Find Me</string>
     <string name="default_notification_channel_id">findme.v1.0.0</string>
 </resources>

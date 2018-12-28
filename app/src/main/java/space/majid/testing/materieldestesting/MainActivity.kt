@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -29,16 +31,20 @@ class MainActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
         usersRef = database.getReference("users")
         setContentView(R.layout.activity_main)
+        val loginEmail: TextInputLayout = findViewById(R.id.login_email)
+        val loginPassword: TextInputLayout = findViewById(R.id.login_password)
         // Login button
-        login_button.setOnClickListener {
-            val email = login_email.text.toString()
-            val password = login_pass.text.toString()
+        val loginButton: MaterialButton = findViewById(R.id.login_button)
+        loginButton.setOnClickListener {
+            val email = loginEmail.editText?.text.toString()
+            val password = loginPassword.editText?.text.toString()
             // TODO validation of these values
             signInUser(email, password)
         }
 
         // Register Link
-        register_link.setOnClickListener {
+        val registerButton: MaterialButton = findViewById(R.id.register_button)
+        registerButton.setOnClickListener {
             Log.d("REGISTER_LINK", "clickListen:success")
             startActivity<RegisterActivity>()
         }
