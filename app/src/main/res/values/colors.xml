@@ -4,7 +4,6 @@
     <color name="colorPrimaryDark">#3110ea</color>
     <color name="colorAccent">#000000</color>
 
-    <color name="my_app_color_on_surface">#000000</color>
+    <color name="my_app_color_on_surface">#231cf5</color>
     <color name="my_app_color_on_error">#f50000</color>
-    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
 </resources>

@@ -50,7 +50,7 @@ class SearchUsersActivity : AppCompatActivity() {
         } else {
             usersRef.orderByChild("username")
                     .startAt(username)
-                    .endAt(username + "\uf8ff").addListenerForSingleValueEvent(object: ValueEventListener{
+                    .endAt(username + "\uf8ff").addListenerForSingleValueEvent(object: ValueEventListener {
                         override fun onCancelled(p0: DatabaseError) {
                         }
                         override fun onDataChange(snapshot: DataSnapshot) {
