@@ -53,7 +53,11 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".FriendsList"></activity>
+        <activity android:name=".FriendsList" />
+        <activity
+            android:name=".FriendListsActivity"
+            android:label="@string/title_activity_friend_lists" />
+        <activity android:name=".FriendsListActivity"></activity>
     </application>
 
 </manifest>

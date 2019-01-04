@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var usersRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        startActivity<FriendsList>()
+        startActivity<FriendsListActivity>()
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
