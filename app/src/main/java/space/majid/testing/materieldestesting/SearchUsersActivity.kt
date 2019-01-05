@@ -30,7 +30,7 @@ class SearchUsersActivity : AppCompatActivity() {
         usersRef = database.getReference("users")
 
         linearLayoutManager = LinearLayoutManager(this)
-        search_users_list_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        search_users_list_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
         searchListAdapter = UsersListAdapter(ArrayList()) { user ->
             // Handle on add friend
