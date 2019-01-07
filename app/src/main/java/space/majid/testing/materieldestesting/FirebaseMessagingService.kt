@@ -21,13 +21,6 @@ class FindMeFirebaseMessagingService : FirebaseMessagingService() {
         super.onMessageReceived(remoteMessage)
 
         Log.d("FIRE_BASE:onMess", "Message Received")
-        // Notification
-        /*
-        val title = remoteMessage?.notification?.title
-        val body = remoteMessage?.notification?.body
-        Log.d("FIRE_BASE_Notif:title", remoteMessage?.notification?.title)
-        Log.d("FIRE_BASE_Notif:body", remoteMessage?.notification?.body)
-        */
         // Notification data
 
         val title = remoteMessage?.data?.get("title")
@@ -36,10 +29,6 @@ class FindMeFirebaseMessagingService : FirebaseMessagingService() {
 
         // Build the notification
         buildNotification(title, body)
-
-        Log.d("FIRE_BASE_Notif:data", title)
-        Log.d("FIRE_BASE_Notif:data", body)
-        Log.d("FIRE_BASE_Notif:data", action)
     }
 
     override fun onNewToken(token: String?) {
@@ -52,7 +41,6 @@ class FindMeFirebaseMessagingService : FirebaseMessagingService() {
         val deviceToken: Map<String, String?> = hashMapOf("token_id" to token)
         usersRef.child(currentUser!!.uid).updateChildren(deviceToken)
                 .addOnSuccessListener {
-                    // TODO take user to it's profile
                     Log.d("FIRE_BASE", "updateToken:success")
                 }
                 .addOnFailureListener {

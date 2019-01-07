@@ -58,7 +58,6 @@ class SearchUsersActivity : AppCompatActivity() {
                             var childs = snapshot.children
                             childs.forEach {snap ->
                                 val userId: String = snap.key.toString()
-                                Log.d("onDataChange_USERID", userId)
                                 snap.children.forEach {
                                     if(it.key == "username") {
                                         var username = it.getValue(true).toString()
@@ -84,7 +83,8 @@ class SearchUsersActivity : AppCompatActivity() {
     private fun addFriend(user: String) {
         auth = FirebaseAuth.getInstance()
         val currentUserId = auth.currentUser?.uid!!
-        usersRef.child(user).child("friend_requests").setValue(currentUserId)
+        val status: Map<String, String> = hashMapOf("status" to "pending")
+        usersRef.child(user).child("friends").child(currentUserId).setValue(status)
                 .addOnSuccessListener {
                     Log.d("FIRE_BASE", "friendRequest:success")
                 }

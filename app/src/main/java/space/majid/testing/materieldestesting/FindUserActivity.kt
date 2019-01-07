@@ -26,13 +26,15 @@ class FindUserActivity : AppCompatActivity(), OnMapReadyCallback {
     private var map: GoogleMap? = null
     private lateinit var currentLocationMarkerOptions: MarkerOptions
     private lateinit var currentLocationMarker: Marker
+
+    private lateinit var remoteCurrentLocationMarkerOptions: MarkerOptions
+    private lateinit var remoteCurrentLocationMarker: Marker
+
+
     private lateinit var broadcastReceiver: BroadcastReceiver
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var usersRef: DatabaseReference
-
-    private val redaUserId: String = "iDOlqFsKYGhrM2wPiaynuCCPsJE2"
-    private val MJ12UserId: String = "yVJ05M8yRXUoTmno327LiTvYrz83"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,12 +45,19 @@ class FindUserActivity : AppCompatActivity(), OnMapReadyCallback {
         database = FirebaseDatabase.getInstance()
         usersRef = database.getReference("users")
         val currentUserId = auth.currentUser?.uid!!
+        val inviteUserId = intent.getStringExtra("userId")
+
         val sendInvite: MaterialButton = findViewById(R.id.send_invite)
+        sendInvite.setOnClickListener {
+            sendLocationInvite(currentUserId, inviteUserId)
+        }
 
         currentLocationMarkerOptions = MarkerOptions()
+        remoteCurrentLocationMarkerOptions = MarkerOptions()
+
         intent = Intent(this, LocationTrackerService::class.java)
         startService(intent)
-        friendLocationChangesListener(MJ12UserId)
+        friendLocationChangesListener(inviteUserId)
 
         broadcastReceiver = object: BroadcastReceiver() {
                 override fun onReceive(context: Context?, intent: Intent?) {
@@ -72,8 +81,7 @@ class FindUserActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
             }
-            registerReceiver(broadcastReceiver, IntentFilter("locationChanged"))
-
+        registerReceiver(broadcastReceiver, IntentFilter("locationChanged"))
     }
 
     override fun onResume() {
@@ -123,8 +131,14 @@ class FindUserActivity : AppCompatActivity(), OnMapReadyCallback {
                         longitude = it.value.toString()
                     }
                 }
-                Log.d("locationChanged", "latitude $latitude")
-                Log.d("locationChanged", "longitude $longitude")
+                if(map != null) {
+                    val latLng = LatLng(latitude.toDouble(), longitude.toDouble())
+                    if(!::remoteCurrentLocationMarker.isInitialized) {
+                        remoteCurrentLocationMarker = map!!.addMarker(MarkerOptions().position(latLng))
+                    } else {
+                        remoteCurrentLocationMarker.position = latLng
+                    }
+                }
             }
 
             override fun onCancelled(p0: DatabaseError) {
@@ -133,5 +147,10 @@ class FindUserActivity : AppCompatActivity(), OnMapReadyCallback {
 
         }
         locationRef.addValueEventListener(locationListener)
+    }
+    fun sendLocationInvite(fromUserId: String, toUserId: String) {
+        // modify users/:toUserId/invites/:from_user/pending
+        // this change will trigger firebase functions to send a new notification
+        usersRef.child(toUserId).child("invites").child(fromUserId).setValue("pending")
     }
 }
