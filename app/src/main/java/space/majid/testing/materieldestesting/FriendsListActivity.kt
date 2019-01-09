@@ -121,10 +121,9 @@ class FriendsListActivity : AppCompatActivity() {
 
     private fun setupPermissions() {
         val permission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECORD_AUDIO)
+                Manifest.permission.ACCESS_FINE_LOCATION)
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            Log.i("FriendsList", "Permission to record denied")
             makeRequest()
         }
     }

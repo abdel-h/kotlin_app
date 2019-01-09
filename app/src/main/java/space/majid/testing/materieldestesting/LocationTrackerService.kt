@@ -65,8 +65,6 @@ class LocationTrackerService : Service() {
 
     private inner class LocationTrackerListener: LocationListener {
         override fun onLocationChanged(location: Location?) {
-            Log.d(TAG, "location lat" + location?.latitude)
-            Log.d(TAG, "location long" + location?.longitude)
             val longitude = location?.longitude
             val latitude = location?.latitude
 
