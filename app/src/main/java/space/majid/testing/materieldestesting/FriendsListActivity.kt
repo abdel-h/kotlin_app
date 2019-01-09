@@ -49,6 +49,7 @@ class FriendsListActivity : AppCompatActivity() {
         pendingFriendsListAdapter = UsersListAdapter(ArrayList()) {
             // accept friend request
             updateFriendStatus(it.userId, "approved")
+            startActivity<FriendsListActivity>()
         }
         pending_friends_list_rv.adapter = pendingFriendsListAdapter
         friends_list_rv.adapter = friendsListAdapter
@@ -105,7 +106,4 @@ class FriendsListActivity : AppCompatActivity() {
         currentUserRef.child("friends").child(userId).setValue(status)
         usersRef.child(userId).child("friends").child(currentUserId).child("status").setValue("approved")
     }
-
-
-
 }

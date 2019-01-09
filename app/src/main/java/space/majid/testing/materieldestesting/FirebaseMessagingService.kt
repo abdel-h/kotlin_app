@@ -42,17 +42,9 @@ class FindMeFirebaseMessagingService : FirebaseMessagingService() {
         Log.d("FIRE_BASE_TOKEN_FMS", token)
         val deviceToken: Map<String, String?> = hashMapOf("token_id" to token)
         usersRef.child(currentUser!!.uid).updateChildren(deviceToken)
-                .addOnSuccessListener {
-                    Log.d("FIRE_BASE", "updateToken:success")
-                }
-                .addOnFailureListener {
-                    Log.d("FIRE_BASE", "updateToken:failure")
-                }
     }
 
     private fun buildNotification(title: String? = "", body: String? = "", action: String? = "") {
-
-        
         val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
                 .setContentTitle(title)
                 .setContentText(body)
@@ -60,6 +52,11 @@ class FindMeFirebaseMessagingService : FirebaseMessagingService() {
 
         if(action == "location_invite") {
             val intent = Intent(this, FindUserActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+            mBuilder.setContentIntent(pendingIntent)
+        } else if( action == "new_friend_request") {
+            val intent = Intent(this, FriendsListActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
             mBuilder.setContentIntent(pendingIntent)

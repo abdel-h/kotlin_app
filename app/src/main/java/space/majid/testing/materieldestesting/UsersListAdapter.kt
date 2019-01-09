@@ -44,4 +44,5 @@ class UsersListAdapter(private var dataSet: ArrayList<UserData>, private val lis
         dataSet.add(user)
         notifyDataSetChanged()
     }
+
 }
