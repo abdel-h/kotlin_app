@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 
 data class UserData(val username: String, val userId: String)
 
-class UsersListAdapter(private var dataSet: ArrayList<UserData>, private val listener: (UserData) -> Unit) : RecyclerView.Adapter<UsersListAdapter.ListViewHolder>() {
+class UsersListAdapter(private var dataSet: ArrayList<UserData>, private var btnText: String, private val listener: (UserData) -> Unit) : RecyclerView.Adapter<UsersListAdapter.ListViewHolder>() {
     class ListViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val username: TextView = view.findViewById(R.id.UserName)
-        val addButton: ImageButton = view.findViewById(R.id.addUser)
+        val addButton: Button = view.findViewById(R.id.addUser)
         var userId = ""
 
 
@@ -29,6 +29,7 @@ class UsersListAdapter(private var dataSet: ArrayList<UserData>, private val lis
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         holder.username.text = dataSet[position].username
         holder.userId = dataSet[position].userId
+        holder.addButton.text = btnText
         holder.bind(dataSet[position], listener)
     }
 

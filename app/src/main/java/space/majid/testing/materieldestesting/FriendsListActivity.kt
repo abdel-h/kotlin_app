@@ -42,7 +42,7 @@ class FriendsListActivity : AppCompatActivity() {
         currentUserRef = database.getReference("users/$currentUserId")
 
         //  Ask for GPS permission
-        setupPermissions()
+        // setupPermissions()
         //  Start LocationTrackerService
         intent = Intent(this, LocationTrackerService::class.java)
         startService(intent)
@@ -52,13 +52,13 @@ class FriendsListActivity : AppCompatActivity() {
 
         friends_list_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
-        friendsListAdapter = UsersListAdapter(ArrayList()) {
+        friendsListAdapter = UsersListAdapter(ArrayList(), "view") {
             // invite to share location
             // sendShareLocationInvite(currentUserId, it.userId)
             // open FindUserActivity with user info
             startActivity<FindUserActivity>("userId" to it.userId, "username" to it.username)
         }
-        pendingFriendsListAdapter = UsersListAdapter(ArrayList()) {
+        pendingFriendsListAdapter = UsersListAdapter(ArrayList(), "View") {
             // accept friend request
             updateFriendStatus(it.userId, "approved")
             startActivity<FriendsListActivity>()

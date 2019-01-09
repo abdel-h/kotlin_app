@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         // Register Link
         val registerButton: MaterialButton = findViewById(R.id.register_button)
         registerButton.setOnClickListener {
-            Log.d("REGISTER_LINK", "clickListen:success")
             startActivity<RegisterActivity>()
         }
     }

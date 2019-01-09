@@ -32,7 +32,7 @@ class SearchUsersActivity : AppCompatActivity() {
         linearLayoutManager = LinearLayoutManager(this)
         search_users_list_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
-        searchListAdapter = UsersListAdapter(ArrayList()) { user ->
+        searchListAdapter = UsersListAdapter(ArrayList(), "Add Friend") { user ->
             // Handle on add friend
             // Send to notification to friend_if by adding the current
             // user ID to users/friend_id/friend_requests
