@@ -5,7 +5,9 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
@@ -20,7 +22,7 @@ class FindMeFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         super.onMessageReceived(remoteMessage)
 
-        Log.d("FIRE_BASE:onMess", "Message Received")
+        Log.d("FIRE_BASE:onMessage", "Message Received")
         // Notification data
 
         val title = remoteMessage?.data?.get("title")
@@ -28,7 +30,7 @@ class FindMeFirebaseMessagingService : FirebaseMessagingService() {
         val action = remoteMessage?.data?.get("action")
 
         // Build the notification
-        buildNotification(title, body)
+        buildNotification(title, body, action)
     }
 
     override fun onNewToken(token: String?) {
@@ -48,11 +50,20 @@ class FindMeFirebaseMessagingService : FirebaseMessagingService() {
                 }
     }
 
-    private fun buildNotification(title: String? = "", body: String? = "") {
+    private fun buildNotification(title: String? = "", body: String? = "", action: String? = "") {
+
+        
         val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
+
+        if(action == "location_invite") {
+            val intent = Intent(this, FindUserActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+            mBuilder.setContentIntent(pendingIntent)
+        }
         val mNotificationId = System.currentTimeMillis().toInt()
         val mNotifyMgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if( Build.VERSION.SDK_INT >= 26 ) {

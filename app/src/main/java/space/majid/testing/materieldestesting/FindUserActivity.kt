@@ -1,19 +1,18 @@
 package space.majid.testing.materieldestesting
 
+
 import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -36,9 +35,13 @@ class FindUserActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var database: FirebaseDatabase
     private lateinit var usersRef: DatabaseReference
 
+    private var permissionsRequestCode = 110
+    private var permissionsGranted = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_find_user)
+        setupPermissions()
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
         auth = FirebaseAuth.getInstance()
@@ -152,5 +155,34 @@ class FindUserActivity : AppCompatActivity(), OnMapReadyCallback {
         // modify users/:toUserId/invites/:from_user/pending
         // this change will trigger firebase functions to send a new notification
         usersRef.child(toUserId).child("invites").child(fromUserId).setValue("pending")
+    }
+
+    private fun setupPermissions() {
+        val permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "Permission to record denied")
+            makeRequest()
+        }
+    }
+
+    private fun makeRequest() {
+        val permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        ActivityCompat.requestPermissions(this, permissions, permissionsRequestCode)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode) {
+            permissionsRequestCode -> {
+                if(grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // permissions denied
+                } else {
+                    // permissions granted
+                    permissionsGranted = true
+                }
+            }
+        }
     }
 }
