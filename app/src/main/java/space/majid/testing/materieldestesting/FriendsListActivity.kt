@@ -1,9 +1,13 @@
 package space.majid.testing.materieldestesting
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.tasks.Task
@@ -23,6 +27,10 @@ class FriendsListActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var currentUserId: String
+
+    private var permissionsRequestCode = 110
+    private var permissionsGranted = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friends_list)
@@ -33,12 +41,16 @@ class FriendsListActivity : AppCompatActivity() {
         currentUserId = auth.currentUser?.uid!!
         currentUserRef = database.getReference("users/$currentUserId")
 
+        //  Ask for GPS permission
+        setupPermissions()
+        //  Start LocationTrackerService
+        intent = Intent(this, LocationTrackerService::class.java)
+        startService(intent)
+
         linearLayoutManager = LinearLayoutManager(this)
         pending_friends_list_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
         friends_list_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-
-
 
         friendsListAdapter = UsersListAdapter(ArrayList()) {
             // invite to share location
@@ -105,5 +117,34 @@ class FriendsListActivity : AppCompatActivity() {
         val status: Map<String, String> = hashMapOf("status" to newStatus)
         currentUserRef.child("friends").child(userId).setValue(status)
         usersRef.child(userId).child("friends").child(currentUserId).child("status").setValue("approved")
+    }
+
+    private fun setupPermissions() {
+        val permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Log.i("FriendsList", "Permission to record denied")
+            makeRequest()
+        }
+    }
+
+    private fun makeRequest() {
+        val permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        ActivityCompat.requestPermissions(this, permissions, permissionsRequestCode)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode) {
+            permissionsRequestCode -> {
+                if(grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // permissions denied
+                } else {
+                    // permissions granted
+                    permissionsGranted = true
+                }
+            }
+        }
     }
 }
